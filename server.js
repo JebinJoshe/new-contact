@@ -31,33 +31,28 @@ app.get('/',(req,res)=>{
     res.send("Hi from server")
 })
 //insertion
-app.post('/api/contacts', (req, res) => {
-    const { firstName, lastName, email, phone,id } = req.body;
-
+pp.post('/api/contacts', (req, res) => {
+    const data = req.body; // Take entire req body as one JSON value
     
     pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting MySQL connection:', err);
-            res.status(500).json({ error: 'Internal server error1' });
+            res.status(500).json({ error: 'Internal server error' });
             return;
         }
 
-        
-        connection.query('INSERT INTO contacts (firstName, lastName, email, phone,id) VALUES (?, ?, ?, ?, ?)',
-            [firstName, lastName, email, phone,id],
-            (error, results) => {
-                
-                connection.release();
+        connection.query('INSERT INTO contacts SET ?', data, (error, results) => {
+            connection.release();
 
-                if (error) {
-                    console.error('Error inserting contact details:', error);
-                    res.status(500).json({ error: 'Internal server error' });
-                    return;
-                }
+            if (error) {
+                console.error('Error inserting contact details:', error);
+                res.status(500).json({ error: 'Internal server error' });
+                return;
+            }
 
-                res.status(201).json({ message: 'Contact details inserted successfully' });
-                console.log("Contact details Inserted Successfully")
-            });
+            res.status(201).json({ message: 'Contact details inserted successfully' });
+            console.log("Contact details Inserted Successfully")
+        });
     });
 });
 app.get('/api/users', (req, res) => {
